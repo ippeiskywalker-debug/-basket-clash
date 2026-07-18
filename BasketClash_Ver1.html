@@ -1,0 +1,27 @@
+
+<!doctype html><html><head><meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
+<style>
+body{margin:0;background:#222;overflow:hidden}canvas{display:block;width:100vw;height:100vh;touch-action:none}
+</style></head><body><canvas id=c></canvas><script>
+const cv=c,x=cv.getContext('2d');function rs(){cv.width=innerWidth;cv.height=innerHeight}onresize=rs;rs();
+let p={x:120,y:cv.height-120},score=0;
+let joy={a:false,x:0,y:0},shoot={};
+cv.addEventListener('touchstart',e=>{for(let t of e.touches){if(t.clientX<innerWidth/2){joy={a:true,x:t.clientX,y:t.clientY}}else shoot.id=t.identifier;}e.preventDefault()});
+cv.addEventListener('touchmove',e=>{for(let t of e.touches)if(joy.a&&t.clientX<innerWidth/2){joy.x=t.clientX;joy.y=t.clientY;}});
+cv.addEventListener('touchend',e=>{ball();joy.a=false;});
+let b={x:0,y:0,vx:0,vy:0,h:true};
+function ball(){if(b.h){b.h=false;b.x=p.x+10;b.y=p.y-40;b.vx=8;b.vy=-12;}}
+function loop(){
+x.clearRect(0,0,cv.width,cv.height);
+x.fillStyle="#c89b5a";x.fillRect(0,0,cv.width,cv.height);
+x.fillStyle="#fff";x.fillRect(cv.width-80,120,8,80);x.strokeRect(cv.width-120,150,40,8);
+if(joy.a){let dx=joy.x-120,dy=joy.y-(cv.height-120);let d=Math.hypot(dx,dy)||1;p.x+=dx/d*4;p.y+=dy/d*4;}
+if(b.h){b.x=p.x+10;b.y=p.y-40;}else{b.x+=b.vx;b.y+=b.vy;b.vy+=.5;if(b.x>cv.width-120&&b.x<cv.width-80&&b.y<160&&b.y>140){score+=2;b.h=true;}if(b.y>cv.height)b.h=true;}
+x.strokeStyle="#000";x.lineWidth=4;
+x.beginPath();x.arc(p.x,p.y-50,12,0,7);x.stroke();
+x.beginPath();x.moveTo(p.x,p.y-38);x.lineTo(p.x,p.y);x.moveTo(p.x-15,p.y-20);x.lineTo(p.x+15,p.y-20);x.moveTo(p.x,p.y);x.lineTo(p.x-12,p.y+25);x.moveTo(p.x,p.y);x.lineTo(p.x+12,p.y+25);x.stroke();
+x.fillStyle="orange";x.beginPath();x.arc(b.x,b.y,8,0,7);x.fill();
+x.fillStyle="#fff";x.font="24px sans-serif";x.fillText("Score "+score,20,30);
+requestAnimationFrame(loop)}
+loop();
+</script></body></html>
